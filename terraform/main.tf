@@ -23,3 +23,8 @@ module "iam"{
     source = "./modules/iam"
     name = var.app_name
 }
+
+module "ecr" {
+  source = "./modules/ecr"
+  name   = var.app_name
+}

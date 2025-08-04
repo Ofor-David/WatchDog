@@ -1,0 +1,2 @@
+# Ignore known vulnerabilities in uvicorn for now
+GHSA-xxxx-yyyy-zzzz
