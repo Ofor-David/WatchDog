@@ -23,3 +23,14 @@ variable "app_name" {
   default     = "watchdog"
   
 }
+
+variable "instance_type" {
+  description = "instance_type for the ECS cluster"
+  type        = string
+  default     = "t2.micro"
+}
+
+variable "key_name" {
+  description = "Name of the SSH key pair to use for EC2 instances"
+  type        = string
+}
