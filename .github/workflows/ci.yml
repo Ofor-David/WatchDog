@@ -3,8 +3,13 @@ name: watchdog CI/CD
 on:
   push:
     branches: [main]
+    paths:
+      - 'Dockerfile'
+      - '.github/workflows/ci.yml'
+      - 'app/**'
   pull_request:
     branches: [main]
+  
 
 jobs:
     scan-and-push:
