@@ -34,3 +34,9 @@ variable "key_name" {
   description = "Name of the SSH key pair to use for EC2 instances"
   type        = string
 }
+
+variable "ecr_image_uri" {
+  description = "ECR image URL"
+  type        = string
+  
+}

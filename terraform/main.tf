@@ -28,3 +28,17 @@ module "ecr" {
   source = "./modules/ecr"
   name   = var.app_name
 }
+
+module "ecs_service" {
+  source              = "./modules/ecs_service"
+  family              = "watchdog-task"
+  cpu                 = 256
+  memory              = 512
+  execution_role_arn  = module.iam.ecs_execution_role_arn
+  task_role_arn       = module.iam.ecs_task_role_arn
+  image_uri           = var.ecr_image_uri
+  container_name      = var.app_name
+  container_port      = 8000
+  cluster_id          = module.ecs_cluster.cluster_id
+  desired_count       = 1
+}

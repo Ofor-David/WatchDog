@@ -1,7 +1,9 @@
 output "cluster_name" {
   value = aws_ecs_cluster.ecs_cluster.name
 }
-
+output "cluster_id"{
+  value = aws_ecs_cluster.ecs_cluster.id
+}
 output "launch_template_id" {
   value = aws_launch_template.ecs.id
 }
