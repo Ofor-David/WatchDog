@@ -13,11 +13,10 @@ module "security_group"{
 module "ecs_cluster" {
   source            = "./modules/ecs_cluster"
   name      = var.app_name
-  subnet_id = module.vpc.public_subnet_id
   instance_type = var.instance_type
   key_name        = var.key_name
   instance_profile_name = module.iam.ecs_instance_profile_name
-  public_subnet_id  = module.vpc.public_subnet_id
+  public_subnet_id  = module.vpc.public_subnet_ids[0]
   security_group_id = module.security_group.security_group_id
 }
 module "iam"{
@@ -51,4 +50,12 @@ module "alb" {
   public_subnet_ids   = module.vpc.public_subnet_ids
   target_port         = 8000
   health_check_path   = "/health"
+}
+
+module "asg" { 
+  source = "./modules/asg"
+  name = var.app_name
+  launch_template_id = module.ecs_cluster.launch_template_id
+  ecs_cluster_name = module.ecs_cluster.cluster_name
+  subnet_ids = module.vpc.public_subnet_ids
 }

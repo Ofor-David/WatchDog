@@ -28,7 +28,3 @@ variable "public_subnet_id" {
   type        = string
 }
 
-variable "subnet_id" {
-  description = "Subnet ID for the ECS instance"
-  type        = string
-}

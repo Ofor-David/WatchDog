@@ -62,7 +62,7 @@ resource "aws_instance" "ecs_instance" {
   ami                         = data.aws_ami.ecs_optimized.id
   instance_type               = var.instance_type
   key_name                    = var.key_name
-  subnet_id                   = var.subnet_id
+  subnet_id                   = var.public_subnet_id
   vpc_security_group_ids      = [var.security_group_id]
   iam_instance_profile        = var.instance_profile_name
   associate_public_ip_address = true

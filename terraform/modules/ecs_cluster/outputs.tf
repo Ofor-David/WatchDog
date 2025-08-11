@@ -7,6 +7,9 @@ output "cluster_id"{
 output "launch_template_id" {
   value = aws_launch_template.ecs.id
 }
+output "launch_template_name" {
+  value = aws_launch_template.ecs.name
+}
 
 output "instance_id" {
   value = aws_instance.ecs_instance.id
