@@ -7,6 +7,7 @@ module "security_group"{
     source = "./modules/security_group"
     vpc_id = module.vpc.vpc_id
     name = var.app_name  
+    alb_security_group_id = module.alb.alb_security_group_id
 }
 
 module "ecs_cluster" {
@@ -41,4 +42,13 @@ module "ecs_service" {
   container_port      = 8000
   cluster_id          = module.ecs_cluster.cluster_id
   desired_count       = 1
+}
+
+module "alb" {
+  source              = "./modules/alb"
+  name                = var.app_name
+  vpc_id              = module.vpc.vpc_id
+  public_subnet_ids   = module.vpc.public_subnet_ids
+  target_port         = 8000
+  health_check_path   = "/health"
 }
