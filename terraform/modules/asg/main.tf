@@ -3,7 +3,7 @@ resource "aws_autoscaling_group" "ecs_asg" {
   max_size             = 4
   min_size             = 1
   vpc_zone_identifier  = var.subnet_ids
-  protect_from_scale_in = true
+  protect_from_scale_in = true # Prevents instances from being terminated during scale-in operations. i.e when scaling down.
 
   launch_template {
     id      = var.launch_template_id
@@ -23,7 +23,7 @@ resource "aws_ecs_capacity_provider" "ecs_cp" {
 
   auto_scaling_group_provider {
     auto_scaling_group_arn         = aws_autoscaling_group.ecs_asg.arn
-    managed_termination_protection = "ENABLED"
+    managed_termination_protection = "ENABLED" # Prevents instances from being terminated by ECS
 
     managed_scaling {
       status                    = "ENABLED"
