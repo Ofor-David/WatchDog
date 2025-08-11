@@ -58,7 +58,7 @@ EOF
   }
 }
 
-resource "aws_instance" "ecs_instance" {
+/* resource "aws_instance" "ecs_instance" {
   ami                         = data.aws_ami.ecs_optimized.id
   instance_type               = var.instance_type
   key_name                    = var.key_name
@@ -77,4 +77,4 @@ EOF
     Name = "${var.name}-ecs-ec2"
   }
 
-}
+} */
