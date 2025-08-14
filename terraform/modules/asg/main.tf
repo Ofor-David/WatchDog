@@ -4,7 +4,7 @@ resource "aws_autoscaling_group" "ecs_asg" {
   min_size             = 1
   vpc_zone_identifier  = var.subnet_ids
   protect_from_scale_in = true # Prevents instances from being terminated during scale-in operations. i.e when scaling down.
-
+  target_group_arns = var.lb_target_group_arns
   launch_template {
     id      = var.launch_template_id
     version = "$Latest"

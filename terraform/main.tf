@@ -58,4 +58,5 @@ module "asg" {
   launch_template_id = module.ecs_cluster.launch_template_id
   ecs_cluster_name = module.ecs_cluster.cluster_name
   subnet_ids = module.vpc.public_subnet_ids
+  lb_target_group_arns = [module.alb.target_group_arn]
 }

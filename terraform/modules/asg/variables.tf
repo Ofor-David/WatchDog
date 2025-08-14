@@ -18,3 +18,8 @@ variable "subnet_ids" {
   type = list(string)
   
 }
+
+variable "lb_target_group_arns" {
+  description = "List of target group ARNs to attach to the ASG"
+  type        = set(string)
+}
