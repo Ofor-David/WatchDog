@@ -1,0 +1,2 @@
+# TODO: On new image push to ecr, ecr auto-pull&rerun container using new image
+# TODO: Fix tasks not being added to target group
