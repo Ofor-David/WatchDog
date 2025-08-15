@@ -53,6 +53,7 @@ resource "aws_lb_target_group" "lb_tg" {
   port     = var.target_port
   protocol = "HTTP"
   vpc_id   = var.vpc_id
+  target_type = "ip" # Use "ip" for ECS tasks
 
   health_check {
     path                = var.health_check_path
