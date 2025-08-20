@@ -10,3 +10,7 @@ output "launch_template_id" {
 output "launch_template_name" {
   value = aws_launch_template.ecs.name
 }
+
+output "ecs_cluster" {
+  value = aws_ecs_cluster.ecs_cluster
+}

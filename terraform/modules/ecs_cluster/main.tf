@@ -43,6 +43,15 @@ resource "aws_launch_template" "ecs" {
     subnet_id                   = var.public_subnet_id
   }
 
+  block_device_mappings {
+    device_name = "/dev/xvda" # Default device name for ECS optimized AMI
+    ebs {
+      volume_size           = var.volume_size
+      volume_type           = "gp2"
+      delete_on_termination = true
+    }
+  }
+
   user_data = base64encode(<<EOF
 #!/bin/bash
 echo ECS_CLUSTER=${var.name}-cluster >> /etc/ecs/ecs.config
@@ -57,24 +66,3 @@ EOF
     Name = "${var.name}-lt"
   }
 }
-
-/* resource "aws_instance" "ecs_instance" {
-  ami                         = data.aws_ami.ecs_optimized.id
-  instance_type               = var.instance_type
-  key_name                    = var.key_name
-  subnet_id                   = var.public_subnet_id
-  vpc_security_group_ids      = [var.security_group_id]
-  iam_instance_profile        = var.instance_profile_name
-  associate_public_ip_address = true
-  user_data = base64encode(
-    <<EOF
-#!/bin/bash
-echo ECS_CLUSTER=${var.name}-cluster >> /etc/ecs/ecs.config
-EOF
-  )
-
-  tags = {
-    Name = "${var.name}-ecs-ec2"
-  }
-
-} */

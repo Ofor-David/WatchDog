@@ -28,3 +28,12 @@ variable "public_subnet_id" {
   type        = string
 }
 
+variable "ecs_service" {
+  description = "ECS service resource to depend on"
+  type        = any
+}
+
+variable "volume_size" {
+  description = "EBS volume size for the ECS instances"
+  type        = number
+}
