@@ -31,7 +31,7 @@ resource "aws_launch_template" "ecs" {
   name_prefix   = "${var.name}-lt-"
   image_id      = data.aws_ami.ecs_optimized.id
   instance_type = var.instance_type
-  key_name      = var.key_name
+  key_name      = var.key_name  
 
   iam_instance_profile {
     name = var.instance_profile_name
@@ -40,7 +40,6 @@ resource "aws_launch_template" "ecs" {
   network_interfaces {
     associate_public_ip_address = true
     security_groups             = [var.security_group_id]
-    subnet_id                   = var.public_subnet_id
   }
 
   block_device_mappings {
