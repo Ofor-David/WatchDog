@@ -17,7 +17,7 @@ resource "aws_ecs_task_definition" "ecs_task_def" {
             portMappings = [
                 {
                     containerPort = 8000
-                    hostPort = var.container_port
+                    hostPort = 0  # Dynamic host port - ECS will assign available port
                     protocol = "tcp"
                 }
             ]

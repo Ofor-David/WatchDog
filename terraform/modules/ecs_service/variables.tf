@@ -13,11 +13,6 @@ variable "memory" {
     type        = number
 }
 
-variable "container_port" {
-    description = "The port on which the container listens"
-    type        = number  
-}
-
 variable "execution_role_arn" {
     description = "The ARN of the IAM role that allows Amazon ECS to make calls to other AWS services on your behalf"
     type        = string

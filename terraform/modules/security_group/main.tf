@@ -5,8 +5,8 @@ resource "aws_security_group" "ecs_sg" {
 
   ingress {
     description = "Allow HTTP traffic"
-    from_port   = 80
-    to_port     = 80
+    from_port   = 32768  # ECS dynamic port range start
+    to_port     = 65535  # ECS dynamic port range end
     protocol    = "tcp"
     security_groups = [aws_security_group.alb_sg.id] # Allow traffic only from the ALB security group
   }
