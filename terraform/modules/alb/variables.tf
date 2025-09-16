@@ -8,15 +8,15 @@ variable "vpc_id" {
 }
 
 variable "public_subnet_ids" {
-  type = list(string)
+  type        = list(string)
   description = "List of public subnet IDs across AZs (min 2)"
-}
-
-variable "target_port" {
-  type    = number
 }
 
 variable "health_check_path" {
   type    = string
   default = "/health"
+}
+variable "alb_sg_id" {
+  type        = string
+  description = "Security group ID for the ALB"
 }

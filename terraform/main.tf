@@ -1,3 +1,8 @@
+module "ecr" {
+  source = "./modules/ecr"
+  name   = var.app_name
+}
+
 module "vpc"{
     source = "./modules/vpc"
     name = var.app_name
@@ -6,8 +11,7 @@ module "vpc"{
 module "security_group"{
     source = "./modules/security_group"
     vpc_id = module.vpc.vpc_id
-    name = var.app_name  
-    alb_security_group_id = module.alb.alb_security_group_id
+    name = var.app_name
 }
 
 module "ecs_cluster" {
@@ -17,16 +21,15 @@ module "ecs_cluster" {
   key_name        = var.key_name
   instance_profile_name = module.iam.ecs_instance_profile_name
   public_subnet_id  = module.vpc.public_subnet_ids[0]
-  security_group_id = module.security_group.security_group_id
+  security_group_id = module.security_group.ecs_sg_id
+  ecs_service = module.ecs_service.ecs_service
+  volume_size = 30 # Default volume size in GB
+  security_group_name = module.security_group.alb_sg_name
 }
+
 module "iam"{
     source = "./modules/iam"
     name = var.app_name
-}
-
-module "ecr" {
-  source = "./modules/ecr"
-  name   = var.app_name
 }
 
 module "ecs_service" {
@@ -38,9 +41,10 @@ module "ecs_service" {
   task_role_arn       = module.iam.ecs_task_role_arn
   image_uri           = var.ecr_image_uri
   container_name      = var.app_name
-  container_port      = 8000
+  container_port      = 8080
   cluster_id          = module.ecs_cluster.cluster_id
   desired_count       = 1
+  lb_tg              = module.alb.target_group_arn
 }
 
 module "alb" {
@@ -48,8 +52,8 @@ module "alb" {
   name                = var.app_name
   vpc_id              = module.vpc.vpc_id
   public_subnet_ids   = module.vpc.public_subnet_ids
-  target_port         = 8000
   health_check_path   = "/api"
+  alb_sg_id = module.security_group.alb_sg_id
 }
 
 module "asg" { 
@@ -59,4 +63,15 @@ module "asg" {
   ecs_cluster_name = module.ecs_cluster.cluster_name
   subnet_ids = module.vpc.public_subnet_ids
   lb_target_group_arns = [module.alb.target_group_arn]
+  ecs_cluster = module.ecs_cluster.ecs_cluster
+}
+
+output "ecr_repo_url" {
+  description = "The URL of the ECR repository"
+  value       = module.ecr.repo_url
+}
+
+output "alb_dns_name" {
+  description = "The DNS name of the ALB"
+  value       = module.alb.alb_dns_name
 }

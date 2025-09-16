@@ -50,3 +50,8 @@ variable "desired_count" {
     description = "The number of instantiations of the task to place and keep running in your service"
     type        = number
 }
+
+variable "lb_tg" {
+  description = "load balancer target group resource to depend on"
+  type        = any
+}

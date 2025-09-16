@@ -1,13 +1,14 @@
 resource "aws_autoscaling_group" "ecs_asg" {
+  depends_on = [var.ecs_cluster]
   desired_capacity     = 2
   max_size             = 4
   min_size             = 1
   vpc_zone_identifier  = var.subnet_ids
-  protect_from_scale_in = true # Prevents instances from being terminated during scale-in operations. i.e when scaling down.
+  protect_from_scale_in = false # Prevents instances from being terminated during scale-in operations. i.e when scaling down.
   target_group_arns = var.lb_target_group_arns
   health_check_type = "ELB"
   health_check_grace_period = 300 # Time to wait before checking health of instances after launch
-
+  force_delete = true
   launch_template {
     id      = var.launch_template_id
     version = "$Latest"
@@ -15,7 +16,7 @@ resource "aws_autoscaling_group" "ecs_asg" {
 
   tag {
     key                 = "Name"
-    value               = "${var.name}-asg"
+    value               = "${var.name}-instances"
     propagate_at_launch = true # This tag will be applied to instances launched by this ASG
   }
 }
@@ -26,7 +27,7 @@ resource "aws_ecs_capacity_provider" "ecs_cp" {
 
   auto_scaling_group_provider {
     auto_scaling_group_arn         = aws_autoscaling_group.ecs_asg.arn
-    managed_termination_protection = "ENABLED" # Prevents instances from being terminated by ECS
+    managed_termination_protection = "DISABLED" # Prevents instances from being terminated by ECS
 
     managed_scaling {
       status                    = "ENABLED"

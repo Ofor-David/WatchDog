@@ -23,6 +23,11 @@ variable "security_group_id" {
   type        = string
 }
 
+variable "security_group_name" {
+  description = "Security group name for the ECS instances"
+  type        = string
+}
+
 variable "public_subnet_id" {
   description = "Public subnet ID for the ECS instances"
   type        = string

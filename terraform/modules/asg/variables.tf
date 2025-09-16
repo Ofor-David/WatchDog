@@ -23,3 +23,8 @@ variable "lb_target_group_arns" {
   description = "List of target group ARNs to attach to the ASG"
   type        = set(string)
 }
+
+variable "ecs_cluster" {
+  description = "ECS cluster resource"
+  type = any
+}
