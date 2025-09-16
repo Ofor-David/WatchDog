@@ -41,7 +41,7 @@ module "ecs_service" {
   task_role_arn       = module.iam.ecs_task_role_arn
   image_uri           = var.ecr_image_uri
   container_name      = var.app_name
-  container_port      = 8080
+  container_port      = 80
   cluster_id          = module.ecs_cluster.cluster_id
   desired_count       = 1
   lb_tg              = module.alb.target_group_arn

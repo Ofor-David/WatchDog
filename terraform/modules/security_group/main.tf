@@ -5,8 +5,8 @@ resource "aws_security_group" "ecs_sg" {
 
   ingress {
     description = "Allow HTTP traffic"
-    from_port   = 8080
-    to_port     = 8080
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     security_groups = [aws_security_group.alb_sg.id] # Allow traffic only from the ALB security group
   }
@@ -33,13 +33,13 @@ resource "aws_security_group" "alb_sg" {
 
   ingress {
     description = "HTTP"
-    from_port   = 8080
-    to_port     = 8080
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Optional HTTPS (403 to 443) - configure later with ACM
+  # HTTPS (443)
   ingress {
     description = "HTTPS"
     from_port   = 443
