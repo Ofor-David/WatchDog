@@ -36,10 +36,16 @@ resource "aws_ecs_service" "ecs_service" {
   desired_count = var.desired_count
   launch_type = "EC2"
   depends_on = [ var.lb_tg ]
+  
 
   deployment_minimum_healthy_percent = 50
   deployment_maximum_percent = 200
 
+    load_balancer{
+        target_group_arn = var.lb_tg
+        container_name = var.container_name
+        container_port = 8000
+    }
   tags = {
     Name = "${var.family}-service"
   }
