@@ -4,4 +4,4 @@ app = FastAPI()
 
 @app.get("/api")
 def root():
-    return {"Hello from Watchdog!"}
+    return {"Hello from Project Watchdog!"}
