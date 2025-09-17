@@ -40,3 +40,57 @@ variable "ecr_image_uri" {
   type        = string
   
 }
+
+variable "healtcheck_path"{
+  description = "Health check path for the ALB"
+  type        = string
+  default     = "/api"
+}
+
+variable "cpu_per_task" {
+    description = "The number of CPU units used by the task"
+    type        = number
+    default     = 256
+}
+
+variable "memory_per_task" {
+    description = "The amount of memory (in MiB) used by the task"
+    type        = number
+    default     = 512
+}
+
+variable "service_min_capacity" {
+    description = "Minimum number of ECS service tasks"
+    type        = number
+    default     = 1
+}
+
+variable "service_desired_capacity" {
+    description = "Initial desired number of ECS service tasks"
+    type        = number
+    default     = 1
+}
+
+variable "service_max_capacity" {
+    description = "Maximum number of ECS service tasks"
+    type        = number
+    default     = 3
+}
+
+variable "service_cpu_target" {
+    description = "Target average CPU utilization for ECS service autoscaling"
+    type        = number
+    default     = 50
+}
+
+variable "instance_min_count"{
+  description = "Minimum number of instances in the ASG"
+  type        = number
+  default     = 1
+}
+
+variable "instance_max_count"{
+  description = "Maximum number of instances in the ASG"
+  type        = number
+  default     = 2
+}

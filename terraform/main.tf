@@ -35,8 +35,8 @@ module "iam" {
 module "ecs_service" {
   source               = "./modules/ecs_service"
   family               = "watchdog-task"
-  cpu                  = 256
-  memory               = 512
+  cpu                  = var.cpu_per_task
+  memory               = var.memory_per_task
   execution_role_arn   = module.iam.ecs_execution_role_arn
   task_role_arn        = module.iam.ecs_task_role_arn
   image_uri            = var.ecr_image_uri
@@ -45,10 +45,10 @@ module "ecs_service" {
   lb_tg                = module.alb.target_group_arn
   ecs_cp_name          = module.asg.ecs_cp_name
   cluster_name         = module.ecs_cluster.cluster_name
-  service_min_capacity = 1
-  desired_count        = 2
-  service_max_capacity = 5
-  service_cpu_target   = 95
+  service_min_capacity = var.service_min_capacity
+  desired_count        = var.service_desired_capacity
+  service_max_capacity = var.service_max_capacity
+  service_cpu_target   = var.service_cpu_target
 }
 
 module "alb" {
@@ -56,7 +56,7 @@ module "alb" {
   name              = var.app_name
   vpc_id            = module.vpc.vpc_id
   public_subnet_ids = module.vpc.public_subnet_ids
-  health_check_path = "/api"
+  health_check_path = var.healtcheck_path
   alb_sg_id         = module.security_group.alb_sg_id
 }
 
@@ -68,6 +68,8 @@ module "asg" {
   subnet_ids           = module.vpc.public_subnet_ids
   lb_target_group_arns = [module.alb.target_group_arn]
   ecs_cluster          = module.ecs_cluster.ecs_cluster
+  instance_min_count = var.instance_min_count
+  instance_max_count = var.instance_max_count
 }
 
 output "ecr_repo_url" {

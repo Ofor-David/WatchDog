@@ -28,3 +28,15 @@ variable "ecs_cluster" {
   description = "ECS cluster resource"
   type = any
 }
+
+variable "instance_max_count" {
+  description = "Maximum number of instances in the ASG"
+  type        = number
+  default     = 2
+}
+
+variable "instance_min_count" {
+  description = "Minimum number of instances in the ASG"
+  type        = number
+  default     = 1
+}

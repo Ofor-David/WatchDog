@@ -4,8 +4,8 @@ resource "aws_autoscaling_group" "ecs_asg" {
   lifecycle {
     ignore_changes = [ desired_capacity ] # Prevents Terraform from modifying desired capacity after initial creation
   }
-  max_size             = 4
-  min_size             = 1
+  max_size             = var.instance_max_count
+  min_size             = var.instance_min_count
   vpc_zone_identifier  = var.subnet_ids
   protect_from_scale_in = false # Prevents instances from being terminated during scale-in operations. i.e when scaling down.
   # target_group_arns = var.lb_target_group_arns
