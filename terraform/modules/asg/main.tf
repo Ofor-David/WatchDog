@@ -34,7 +34,7 @@ resource "aws_ecs_capacity_provider" "ecs_cp" {
 
     managed_scaling {
       status                    = "ENABLED"
-      target_capacity           = 100 # Percentage of the ASG's desired capacity to maintain before scaling
+      target_capacity           = 70 # Percentage of the ASG's desired capacity to maintain before scaling
       minimum_scaling_step_size = 1
       maximum_scaling_step_size = 2
     }

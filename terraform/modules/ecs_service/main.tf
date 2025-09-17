@@ -76,7 +76,7 @@ resource "aws_appautoscaling_policy" "ecs_service_cpu_policy" {
       predefined_metric_type = "ECSServiceAverageCPUUtilization"
     }
     target_value       = var.service_cpu_target
-    scale_in_cooldown  = 60
-    scale_out_cooldown = 60
+    scale_in_cooldown  = 30 # Seconds to wait after a scale-in activity before another scaling activity can start
+    scale_out_cooldown = 30 # Seconds to wait after a scale-out activity before another scaling activity can start
   }
 }
