@@ -1,6 +1,9 @@
 resource "aws_autoscaling_group" "ecs_asg" {
   depends_on = [var.ecs_cluster]
-  desired_capacity     = 1
+  # desired_capacity intentionally ommitted to allow ASG to be managed by ECS capacity provider
+  lifecycle {
+    ignore_changes = [ desired_capacity ] # Prevents Terraform from modifying desired capacity after initial creation
+  }
   max_size             = 4
   min_size             = 1
   vpc_zone_identifier  = var.subnet_ids

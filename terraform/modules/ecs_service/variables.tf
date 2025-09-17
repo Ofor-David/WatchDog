@@ -50,3 +50,33 @@ variable "lb_tg" {
   description = "load balancer target group resource to depend on"
   type        = any
 }
+
+variable "ecs_cp_name" {
+  description = "The name of the ECS capacity provider to use"
+  type        = string
+}
+
+# Cluster name needed to build Application Auto Scaling resource_id
+variable "cluster_name" {
+    description = "ECS cluster name"
+    type        = string
+}
+
+# Autoscaling bounds for desired count
+variable "service_min_capacity" {
+    description = "Minimum tasks for service autoscaling"
+    type        = number
+    default     = 1
+}
+
+variable "service_max_capacity" {
+    description = "Maximum tasks for service autoscaling"
+    type        = number
+    default     = 6
+}
+
+variable "service_cpu_target" {
+    description = "Target average CPU utilization for ECS service autoscaling"
+    type        = number
+    default     = 50
+}
