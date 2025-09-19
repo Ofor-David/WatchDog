@@ -58,6 +58,7 @@ module "alb" {
   public_subnet_ids = module.vpc.public_subnet_ids
   health_check_path = var.healtcheck_path
   alb_sg_id         = module.security_group.alb_sg_id
+  domain_name       = var.domain_name
 }
 
 module "asg" {
@@ -68,8 +69,8 @@ module "asg" {
   subnet_ids           = module.vpc.public_subnet_ids
   lb_target_group_arns = [module.alb.target_group_arn]
   ecs_cluster          = module.ecs_cluster.ecs_cluster
-  instance_min_count = var.instance_min_count
-  instance_max_count = var.instance_max_count
+  instance_min_count   = var.instance_min_count
+  instance_max_count   = var.instance_max_count
 }
 
 output "ecr_repo_url" {

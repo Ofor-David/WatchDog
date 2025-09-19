@@ -94,3 +94,8 @@ variable "instance_max_count"{
   type        = number
   default     = 2
 }
+
+variable "domain_name"{
+  description = "The domain name for the ACM certificate"
+  type        = string
+}

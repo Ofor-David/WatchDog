@@ -2,6 +2,7 @@ aws_access_key = "xxxx"
 aws_secret_key = "xxxx"
 key_name = "key name for ec2"
 ecr_image_uri = "xxxxxxx.dkr.ecr.us-east-1.amazonaws.com/watchdog-repo:latest"
+domain_name = "domainname.com"
 
 # Modify as desired
 cpu_per_task = 256

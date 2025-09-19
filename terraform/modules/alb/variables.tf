@@ -20,3 +20,8 @@ variable "alb_sg_id" {
   type        = string
   description = "Security group ID for the ALB"
 }
+
+variable "domain_name" {
+  description = "The domain name for the ACM certificate"
+  type        = string
+}
