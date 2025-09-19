@@ -72,7 +72,7 @@
 - **Secure AWS Deployment**: Production-ready AWS architecture with security best practices
 - **Network Segmentation**: VPC with proper security groups and network isolation
 - **Identity & Access Management**: Least-privilege IAM roles and policies
-- **Encrypted Communication**: TLS encryption for all communications(in development)
+- **Encrypted Communication**: SSL encryption for all communications
 
 ### **Observability & Monitoring(In developement)**
 - **Container Insights**: Deep visibility into ECS cluster and task performance
@@ -107,7 +107,7 @@
 #### **Application Load Balancer**
 - High availability with multi-AZ deployment
 - Health checks and automatic failover
-- SSL/TLS termination (In developement)
+- SSL/TLS termination
 
 #### **ECR Repository with Security**
 - Private container registry with vulnerability scanning
@@ -300,6 +300,9 @@ Basic health check endpoint.
 **Request:**
 ```bash
 curl http://your-alb-dns/api
+```
+```bash
+curl https://domain-name/api
 ```
 
 **Response:**
