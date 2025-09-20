@@ -86,7 +86,7 @@ variable "service_cpu_target" {
 variable "instance_min_count"{
   description = "Minimum number of instances in the ASG"
   type        = number
-  default     = 1
+  default     = 0
 }
 
 variable "instance_max_count"{

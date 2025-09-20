@@ -30,7 +30,7 @@ resource "aws_ecs_capacity_provider" "ecs_cp" {
 
   auto_scaling_group_provider {
     auto_scaling_group_arn         = aws_autoscaling_group.ecs_asg.arn
-    managed_termination_protection = "DISABLED" # Prevents instances from being terminated by ECS
+    managed_termination_protection = "ENABLED" # Prevents instances from being terminated by ECS
 
     managed_scaling {
       status                    = "ENABLED"
