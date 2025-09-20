@@ -50,6 +50,7 @@ module "ecs_service" {
   service_max_capacity = var.service_max_capacity
   service_cpu_target   = var.service_cpu_target
   instance_cpu_target  = var.instance_cpu_target
+  asg_name             = module.asg.asg_name
 }
 
 module "alb" {
