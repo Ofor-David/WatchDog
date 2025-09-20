@@ -95,6 +95,11 @@ variable "instance_max_count"{
   default     = 2
 }
 
+variable "instance_cpu_target" {
+    description = "Target average CPU utilization for ECS instance autoscaling"
+    type        = number
+    default     = 40
+} 
 variable "domain_name"{
   description = "The domain name for the ACM certificate"
   type        = string

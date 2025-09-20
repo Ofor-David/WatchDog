@@ -80,3 +80,17 @@ resource "aws_appautoscaling_policy" "ecs_service_cpu_policy" {
     scale_out_cooldown = 30 # Seconds to wait after a scale-out activity before another scaling activity can start
   }
 }
+
+# ASG instance autoscaling
+resource "aws_autoscaling_policy" "ecs_asg_cpu_scale" {
+  name                   = "ecs-asg-cpu-target"
+  policy_type            = "TargetTrackingScaling"
+  autoscaling_group_name = aws_autoscaling_group.ecs_asg.name
+
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ASGAverageCPUUtilization"
+    }
+    target_value       = var.instance_cpu_target  # adjust to taste
+  }
+}

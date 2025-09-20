@@ -49,6 +49,7 @@ module "ecs_service" {
   desired_count        = var.service_desired_capacity
   service_max_capacity = var.service_max_capacity
   service_cpu_target   = var.service_cpu_target
+  instance_cpu_target  = var.instance_cpu_target
 }
 
 module "alb" {

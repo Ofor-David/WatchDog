@@ -15,3 +15,4 @@ service_cpu_target = 50 # percentage of CPU utilization before scaling
 
 instance_min_count = 1
 instance_max_count = 4
+instance_cpu_target = 40 # percentage of CPU utilization before scaling

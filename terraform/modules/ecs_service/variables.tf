@@ -80,3 +80,9 @@ variable "service_cpu_target" {
     type        = number
     default     = 50
 }
+
+variable "instance_cpu_target" {
+    description = "Target average CPU utilization for ECS instance autoscaling"
+    type        = number
+    default     = 40
+}
