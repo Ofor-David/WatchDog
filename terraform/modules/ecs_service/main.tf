@@ -86,7 +86,7 @@ resource "aws_autoscaling_policy" "ecs_asg_cpu_scale" {
   name                   = "ecs-asg-cpu-target"
   policy_type            = "TargetTrackingScaling"
   autoscaling_group_name = var.asg_name
-
+  estimated_instance_warmup = 300
   target_tracking_configuration {
     predefined_metric_specification {
       predefined_metric_type = "ASGAverageCPUUtilization"
