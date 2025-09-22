@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "falco_rules" {
-  bucket = "${var.name_prefix}-falco-rules"
+  bucket = "${var.name_prefix}-falco-rules-bucket"
 
   tags = {
     Name    = "FalcoRulesBucket"

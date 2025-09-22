@@ -1,3 +1,4 @@
+app_name = "watchdog"
 aws_access_key = "xxxx"
 aws_secret_key = "xxxx"
 key_name = "key name for ec2"

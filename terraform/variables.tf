@@ -20,8 +20,6 @@ variable "aws_region" {
 variable "app_name" {
   description = "Name of the application"
   type        = string
-  default     = "watchdog"
-  
 }
 
 variable "instance_type" {

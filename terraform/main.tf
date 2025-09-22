@@ -15,23 +15,23 @@ module "security_group" {
 }
 
 module "ecs_cluster" {
-  source                = "./modules/ecs_cluster"
-  name                  = var.app_name
-  instance_type         = var.instance_type
-  key_name              = var.key_name
-  instance_profile_name = module.iam.ecs_instance_profile_name
-  public_subnet_id      = module.vpc.public_subnet_ids[0]
-  security_group_id     = module.security_group.ecs_sg_id
-  ecs_service           = module.ecs_service.ecs_service
-  volume_size           = 30 # Default volume size in GB
-  security_group_name   = module.security_group.alb_sg_name
-  falco_bucket_name     = module.falco.falco_bucket_name
+  source                  = "./modules/ecs_cluster"
+  name                    = var.app_name
+  instance_type           = var.instance_type
+  key_name                = var.key_name
+  instance_profile_name   = module.iam.ecs_instance_profile_name
+  public_subnet_id        = module.vpc.public_subnet_ids[0]
+  security_group_id       = module.security_group.ecs_sg_id
+  ecs_service             = module.ecs_service.ecs_service
+  volume_size             = 30 # Default volume size in GB
+  security_group_name     = module.security_group.alb_sg_name
+  falco_bucket_name       = module.falco.falco_bucket_name
   custom_rules_object_key = "custom_rules.yaml"
 }
 
 module "iam" {
-  source = "./modules/iam"
-  name   = var.app_name
+  source           = "./modules/iam"
+  name             = var.app_name
   falco_bucket_arn = module.falco.falco_bucket_arn
 }
 
@@ -78,8 +78,8 @@ module "asg" {
   instance_max_count   = var.instance_max_count
 }
 
-module "falco"{
-  source = "./modules/falco"
+module "falco" {
+  source      = "./modules/falco"
   name_prefix = var.app_name
 }
 
@@ -91,4 +91,9 @@ output "ecr_repo_url" {
 output "alb_dns_name" {
   description = "The DNS name of the ALB"
   value       = module.alb.alb_dns_name
+}
+
+output "falco_bucket_name"{
+  description = "The name of the S3 bucket for Falco rules"
+  value = module.falco.falco_bucket_name
 }
