@@ -53,6 +53,50 @@ resource "aws_launch_template" "ecs" {
   user_data = base64encode(<<EOF
 #!/bin/bash
 echo ECS_CLUSTER=${var.name}-cluster >> /etc/ecs/ecs.config
+
+# Update system
+yum update -y
+
+# Install dependencies
+yum install -y wget curl jq amazon-cloudwatch-agent
+
+# Install Falco
+curl -s https://falco.org/repo/falcosecurity-packages.asc | gpg --dearmor -o /etc/pki/rpm-gpg/FALCO-GPG-KEY
+cat <<EOT > /etc/yum.repos.d/falco.repo
+[falco]
+name=Falco
+baseurl=https://download.falco.org/packages/rpm/$releasever/\$basearch
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/FALCO-GPG-KEY
+EOT
+yum install -y falco
+
+# Systemd service to pull rules
+cat <<EOT > /etc/systemd/system/falco-update-rules.service
+[Unit]
+Description=Update Falco Rules from S3
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/falco-update-rules.sh
+EOT
+
+# Script to sync rules from S3
+cat <<'EOS' > /usr/local/bin/falco-update-rules.sh
+#!/bin/bash
+aws s3 cp s3://${var.falco_bucket_name}/${var.custom_rules_object_key} /etc/falco/falco_rules.local.yaml
+systemctl restart falco
+EOS
+chmod +x /usr/local/bin/falco-update-rules.sh
+
+# Cronjob for daily rule updates at 3 AM
+echo "0 3 * * * root /usr/local/bin/falco-update-rules.sh" > /etc/cron.d/falco-update
+
+# Enable and start Falco
+systemctl enable falco
+systemctl start falco
+systemctl daemon-reload
 EOF
   )
 

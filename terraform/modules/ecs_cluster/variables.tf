@@ -42,3 +42,13 @@ variable "volume_size" {
   description = "EBS volume size for the ECS instances"
   type        = number
 }
+
+variable "falco_bucket_name"{
+  description = "s3 bucket name for falco custom rules"
+  type = string
+}
+
+variable "custom_rules_object_key"{
+  description = "s3 object key for falco custom rules"
+  type = string
+}

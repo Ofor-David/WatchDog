@@ -25,11 +25,14 @@ module "ecs_cluster" {
   ecs_service           = module.ecs_service.ecs_service
   volume_size           = 30 # Default volume size in GB
   security_group_name   = module.security_group.alb_sg_name
+  falco_bucket_name     = module.falco.falco_bucket_name
+  custom_rules_object_key = "custom_rules.yaml"
 }
 
 module "iam" {
   source = "./modules/iam"
   name   = var.app_name
+  falco_bucket_arn = module.falco.falco_bucket_arn
 }
 
 module "ecs_service" {
@@ -73,6 +76,11 @@ module "asg" {
   ecs_cluster          = module.ecs_cluster.ecs_cluster
   instance_min_count   = var.instance_min_count
   instance_max_count   = var.instance_max_count
+}
+
+module "falco"{
+  source = "./modules/falco"
+  name_prefix = var.app_name
 }
 
 output "ecr_repo_url" {

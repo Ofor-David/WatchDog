@@ -64,3 +64,43 @@ resource "aws_iam_role" "ecs_task_role" {
     }
   )
 }
+
+# IAM Policy to allow S3 read
+resource "aws_iam_policy" "falco_s3_read" {
+  name        = "FalcoS3ReadPolicy"
+  description = "Allow EC2 instances to read Falco rules from S3"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["s3:GetObject", "s3:ListBucket"]
+        Resource = "${var.falco_bucket_arn}/*"
+      }
+    ]
+  })
+}
+
+# IAM Role for EC2
+/* resource "aws_iam_role" "ecs_instance_role" {
+  name = "WatchDogECSInstanceRole"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+ */
+# Attach policy to role
+resource "aws_iam_role_policy_attachment" "falco_s3_read_attach" {
+  role       = aws_iam_role.ecs_instance_role.name
+  policy_arn = aws_iam_policy.falco_s3_read.arn
+}
+
