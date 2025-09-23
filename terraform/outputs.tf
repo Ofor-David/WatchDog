@@ -13,7 +13,7 @@ output "falco_bucket_name"{
   value = module.falco.falco_bucket_name
 }
 
-output "bastion_public_ip" {
+output "bastion_public_dns" {
   description = "Public IP address of the bastion host"
-  value       = module.bastion.bastion_public_ip
+  value       = module.bastion.bastion_public_dns
 }
