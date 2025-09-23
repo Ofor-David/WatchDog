@@ -87,6 +87,12 @@ variable "instance_max_count"{
   default     = 2
 }
 
+variable "instance_volume_size"{
+  description = "EBS volume size for each instance in the ASG"
+  type        = number
+  default     = 5
+}
+
 variable "instance_cpu_target" {
     description = "Target average CPU utilization for ECS instance autoscaling"
     type        = number

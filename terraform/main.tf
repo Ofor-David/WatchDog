@@ -35,7 +35,7 @@ module "ecs_cluster" {
   public_subnet_id        = module.vpc.public_subnet_ids[0]
   security_group_id       = module.security_group.ecs_sg_id
   ecs_service             = module.ecs_service.ecs_service
-  volume_size             = 30 # Default volume size in GB
+  volume_size             = var.instance_volume_size
   security_group_name     = module.security_group.alb_sg_name
   falco_bucket_name       = module.falco.falco_bucket_name
   custom_rules_object_key = "custom_rules.yaml"
