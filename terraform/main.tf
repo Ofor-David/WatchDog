@@ -9,10 +9,22 @@ module "vpc" {
 }
 
 module "security_group" {
-  source = "./modules/security_group"
-  vpc_id = module.vpc.vpc_id
-  name   = var.app_name
+  source        = "./modules/security_group"
+  vpc_id        = module.vpc.vpc_id
+  name          = var.app_name
+  allowed_ips   = ["${module.bastion.bastion_private_ip}/32"]
+  your_local_ip = var.your_local_ip
+
 }
+
+module "bastion" {
+  source      = "./modules/bastion"
+  name_prefix = var.app_name
+  key_name    = var.key_name
+  subnet_id   = module.vpc.public_subnet_ids[0]
+  alb_sg_id   = module.security_group.alb_sg_id
+}
+
 
 module "ecs_cluster" {
   source                  = "./modules/ecs_cluster"
@@ -81,19 +93,4 @@ module "asg" {
 module "falco" {
   source      = "./modules/falco"
   name_prefix = var.app_name
-}
-
-output "ecr_repo_url" {
-  description = "The URL of the ECR repository"
-  value       = module.ecr.repo_url
-}
-
-output "alb_dns_name" {
-  description = "The DNS name of the ALB"
-  value       = module.alb.alb_dns_name
-}
-
-output "falco_bucket_name"{
-  description = "The name of the S3 bucket for Falco rules"
-  value = module.falco.falco_bucket_name
 }

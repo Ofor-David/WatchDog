@@ -11,6 +11,15 @@ resource "aws_security_group" "ecs_sg" {
     security_groups = [aws_security_group.alb_sg.id] # Allow traffic only from the ALB security group
   }
 
+  # ssh (22) - optional, remove if not needed
+  ingress {
+    description = "SSH"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = var.allowed_ips
+  }
+
   egress {
     description = "Allow all outbound traffic"
     from_port   = 0
@@ -46,6 +55,15 @@ resource "aws_security_group" "alb_sg" {
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # ssh (22) - optional, remove if not needed
+  ingress {
+    description = "SSH"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [ "${var.your_local_ip}/32" ]
   }
 
   egress {

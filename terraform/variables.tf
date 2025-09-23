@@ -102,3 +102,8 @@ variable "domain_name"{
   description = "The domain name for the ACM certificate"
   type        = string
 }
+
+variable "your_local_ip"{
+  description = "Your local machine's public IP address for SSH access to the ALB security group"
+  type        = string
+}
