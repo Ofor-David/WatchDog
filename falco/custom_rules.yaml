@@ -14,7 +14,7 @@
   condition: fd.name in (/etc/passwd, /etc/shadow, /etc/sudoers, /etc/ssh/sshd_config)
 
 - macro: trusted_network_ports
-  condition: fd.sport in (22, 80, 443) or fd.dport in (22, 80, 443)
+  condition: fd.sport in (22, 80, 443) or fd.rport in (22, 80, 443)
 
 # --- Custom Rules ---
 
@@ -36,7 +36,7 @@
 - rule: Unexpected outbound connection
   desc: Detect processes connecting to non-standard ports
   condition: evt.type = connect and fd.type = inet and not trusted_network_ports
-  output: "Unexpected outbound connection (proc=%proc.name user=%user.name dst=%fd.sip:%fd.dport)"
+  output: "Unexpected outbound connection (proc=%proc.name user=%user.name dst=%fd.rip:%fd.rport)"
   priority: WARNING
 
 # 4. Detect execution of unexpected binaries on host
