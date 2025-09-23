@@ -54,7 +54,7 @@ module "ecs_service" {
   memory               = var.memory_per_task
   execution_role_arn   = module.iam.ecs_execution_role_arn
   task_role_arn        = module.iam.ecs_task_role_arn
-  image_uri            = var.ecr_image_uri
+  image_uri            = "${module.ecr.repo_url}:latest"
   container_name       = var.app_name
   cluster_id           = module.ecs_cluster.cluster_id
   lb_tg                = module.alb.target_group_arn

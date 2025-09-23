@@ -1,6 +1,6 @@
-output "ecr_repo_url" {
+output "ecr_repo_name" {
   description = "The URL of the ECR repository"
-  value       = module.ecr.repo_url
+  value       = module.ecr.repo_name
 }
 
 output "alb_dns_name" {

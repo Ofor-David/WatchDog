@@ -33,12 +33,6 @@ variable "key_name" {
   type        = string
 }
 
-variable "ecr_image_uri" {
-  description = "ECR image URL"
-  type        = string
-  
-}
-
 variable "healtcheck_path"{
   description = "Health check path for the ALB"
   type        = string
