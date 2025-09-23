@@ -1,0 +1,57 @@
+# ================================
+# Falco Starter Custom Rules
+# For ECS on EC2 instances
+# ================================
+
+# --- Macros (reusable conditions) ---
+- macro: container
+  condition: container.id != host
+
+- macro: shell_binaries
+  condition: proc.name in (bash, sh, zsh, ash)
+
+- macro: sensitive_files
+  condition: fd.name in (/etc/passwd, /etc/shadow, /etc/sudoers, /etc/ssh/sshd_config)
+
+- macro: trusted_network_ports
+  condition: fd.sport in (22, 80, 443) or fd.dport in (22, 80, 443)
+
+# --- Custom Rules ---
+
+# 1. Detect unexpected shell in a container
+- rule: Unexpected shell in container
+  desc: Alert if a shell is spawned inside a container
+  condition: evt.type = execve and container and shell_binaries
+  output: "Unexpected shell spawned inside container (container=%container.name proc=%proc.name user=%user.name)"
+  priority: WARNING
+
+# 2. Detect write to sensitive system files
+- rule: Write to sensitive file
+  desc: Detect any write to sensitive system files
+  condition: evt.type in (open, openat, creat) and evt.arg.flags contains O_WRONLY and sensitive_files
+  output: "Sensitive file write attempt (user=%user.name file=%fd.name proc=%proc.name)"
+  priority: CRITICAL
+
+# 3. Detect unexpected network connection
+- rule: Unexpected outbound connection
+  desc: Detect processes connecting to non-standard ports
+  condition: evt.type = connect and fd.type = inet and not trusted_network_ports
+  output: "Unexpected outbound connection (proc=%proc.name user=%user.name dst=%fd.sip:%fd.dport)"
+  priority: WARNING
+
+# 4. Detect execution of unexpected binaries on host
+- list: trusted_binaries
+  items: [/usr/bin/amazon-ssm-agent, /usr/bin/nginx, /usr/bin/java, /usr/bin/docker, /usr/bin/containerd]
+
+- rule: Unexpected binary execution on host
+  desc: Detect execution of non-trusted binaries on the ECS host
+  condition: evt.type=execve and not container and not proc.exe in (trusted_binaries)
+  output: "Unexpected binary execution on host (proc=%proc.exe user=%user.name)"
+  priority: WARNING
+
+# 5. Detect privilege escalation
+- rule: Privilege escalation via setuid
+  desc: Detect attempts to escalate privileges with setuid
+  condition: evt.type = setuid and evt.arg.res = 0 and user.uid != 0
+  output: "Privilege escalation attempt (proc=%proc.name user=%user.name)"
+  priority: CRITICAL
