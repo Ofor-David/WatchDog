@@ -15,7 +15,7 @@ data "aws_ami" "ecs_optimized" {
 
   filter {
     name   = "name"
-    values = ["amzn2-ami-ecs-hvm-*-x86_64-ebs"]
+    values = ["al2023-ami-ecs-hvm-*-kernel-6.1-x86_64"]
   }
 
   filter {
@@ -30,7 +30,7 @@ resource "aws_launch_template" "ecs" {
   name_prefix   = "${var.name}-lt-"
   image_id      = data.aws_ami.ecs_optimized.id
   instance_type = var.instance_type
-  key_name      = var.key_name  
+  key_name      = var.key_name
 
   iam_instance_profile {
     name = var.instance_profile_name
@@ -52,35 +52,37 @@ resource "aws_launch_template" "ecs" {
 
   user_data = base64encode(<<EOF
 #!/bin/bash
+set -xe
+
+# Register ECS cluster
 echo ECS_CLUSTER=${var.name}-cluster >> /etc/ecs/ecs.config
 
 # Update system
-yum update -y
+dnf update -y
 
 # Install dependencies
-yum install -y wget curl jq amazon-cloudwatch-agent
+dnf install -y wget jq amazon-cloudwatch-agent
 
-# Install Falco
-curl -s https://falco.org/repo/falcosecurity-packages.asc | gpg --dearmor -o /etc/pki/rpm-gpg/FALCO-GPG-KEY
-cat <<EOT > /etc/yum.repos.d/falco.repo
-[falco]
-name=Falco
-baseurl=https://download.falco.org/packages/rpm/$releasever/\$basearch
-enabled=1
-gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/FALCO-GPG-KEY
-EOT
-yum install -y falco
+# Trust Falco GPG key
+rpm --import https://falco.org/repo/falcosecurity-packages.asc
 
-# Systemd service to pull rules
-cat <<EOT > /etc/systemd/system/falco-update-rules.service
-[Unit]
-Description=Update Falco Rules from S3
+# Add Falco repo
+wget -O /etc/yum.repos.d/falcosecurity.repo https://falco.org/repo/falcosecurity-rpm.repo
 
-[Service]
-Type=oneshot
-ExecStart=/usr/local/bin/falco-update-rules.sh
-EOT
+# Update repo metadata
+dnf makecache
+
+# Update package list
+dnf update -y
+
+# Install build deps for driver (kmod/eBPF)
+dnf install -y dkms make kernel-devel-$(uname -r) clang llvm cronie
+
+# Install Falco (noninteractive, let it auto-pick driver)
+FALCO_FRONTEND=noninteractive dnf install -y falco
+
+# Disable falcoctl auto-updates
+systemctl mask falcoctl-artifact-follow.service || true
 
 # Script to sync rules from S3
 cat <<'EOS' > /usr/local/bin/falco-update-rules.sh
@@ -90,13 +92,27 @@ systemctl restart falco
 EOS
 chmod +x /usr/local/bin/falco-update-rules.sh
 
-# Cronjob for daily rule updates at 3 AM
-echo "0 3 * * * root /usr/local/bin/falco-update-rules.sh" > /etc/cron.d/falco-update
+# Systemd service to manually update rules
+cat <<EOT > /etc/systemd/system/falco-update-rules.service
+[Unit]
+Description=Update Falco Rules from S3
 
-# Enable and start Falco
-systemctl enable falco
-systemctl start falco
-systemctl daemon-reload
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/falco-update-rules.sh
+EOT
+
+# Cronjob for rule updates every night at 3 AM
+sudo mkdir -p /etc/cron.d
+cat <<EOT | sudo tee /etc/cron.d/falco-update
+0 3 * * * root /usr/local/bin/falco-update-rules.sh
+EOT
+sudo systemctl enable crond
+sudo systemctl start crond
+
+# Enable and start Falco (modern eBPF is default auto choice)
+sudo systemctl daemon-reload
+sudo systemctl start falco
 EOF
   )
 
