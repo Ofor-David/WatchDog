@@ -15,5 +15,5 @@ output "falco_bucket_name"{
 
 output "bastion_ssh_command" {
   description = "command to ssh to bastion host"
-  value       = "ssh -i ${var.key_name}.pem ubuntu@${module.bastion.bastion_public_dns}"
+  value       = "\nscp -i ${var.key_name}.pem ${var.key_name}.pem ubuntu@${module.bastion.bastion_public_dns}:/home/ubuntu/\nssh -i ${var.key_name}.pem ubuntu@${module.bastion.bastion_public_dns}"
 }

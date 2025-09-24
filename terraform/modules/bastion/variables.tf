@@ -12,7 +12,7 @@ variable "alb_sg_id" {
   description = "Security group ID for the Alb security group to allow SSH access"
   type        = string
 }
-variable "name_prefix"{
-    description = "Prefix for all resources created"
-    type = string
+variable "name_prefix" {
+  description = "Prefix for all resources created"
+  type        = string
 }
