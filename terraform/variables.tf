@@ -33,77 +33,83 @@ variable "key_name" {
   type        = string
 }
 
-variable "healtcheck_path"{
+variable "healtcheck_path" {
   description = "Health check path for the ALB"
   type        = string
   default     = "/api"
 }
 
 variable "cpu_per_task" {
-    description = "The number of CPU units used by the task"
-    type        = number
-    default     = 256
+  description = "The number of CPU units used by the task"
+  type        = number
+  default     = 256
 }
 
 variable "memory_per_task" {
-    description = "The amount of memory (in MiB) used by the task"
-    type        = number
-    default     = 512
+  description = "The amount of memory (in MiB) used by the task"
+  type        = number
+  default     = 512
 }
 
 variable "service_min_capacity" {
-    description = "Minimum number of ECS service tasks"
-    type        = number
-    default     = 1
+  description = "Minimum number of ECS service tasks"
+  type        = number
+  default     = 1
 }
 
 variable "service_desired_capacity" {
-    description = "Initial desired number of ECS service tasks"
-    type        = number
-    default     = 1
+  description = "Initial desired number of ECS service tasks"
+  type        = number
+  default     = 1
 }
 
 variable "service_max_capacity" {
-    description = "Maximum number of ECS service tasks"
-    type        = number
-    default     = 3
+  description = "Maximum number of ECS service tasks"
+  type        = number
+  default     = 3
 }
 
 variable "service_cpu_target" {
-    description = "Target average CPU utilization for ECS service autoscaling"
-    type        = number
-    default     = 50
+  description = "Target average CPU utilization for ECS service autoscaling"
+  type        = number
+  default     = 50
 }
 
-variable "instance_min_count"{
+variable "instance_min_count" {
   description = "Minimum number of instances in the ASG"
   type        = number
   default     = 0
 }
 
-variable "instance_max_count"{
+variable "instance_max_count" {
   description = "Maximum number of instances in the ASG"
   type        = number
   default     = 2
 }
 
-variable "instance_volume_size"{
+variable "instance_volume_size" {
   description = "EBS volume size for each instance in the ASG"
   type        = number
   default     = 5
 }
 
+variable "max_instance_lifetime" {
+  description = "Auto terminate and replace instances when they reach this age"
+  type        = number
+  default     = 604800 #7 days
+}
+
 variable "instance_cpu_target" {
-    description = "Target average CPU utilization for ECS instance autoscaling"
-    type        = number
-    default     = 40
-} 
-variable "domain_name"{
+  description = "Target average CPU utilization for ECS instance autoscaling"
+  type        = number
+  default     = 40
+}
+variable "domain_name" {
   description = "The domain name for the ACM certificate"
   type        = string
 }
 
-variable "your_local_ip"{
+variable "your_local_ip" {
   description = "Your local machine's public IP address for SSH access to the ALB security group"
   type        = string
 }

@@ -19,6 +19,8 @@ resource "aws_autoscaling_group" "ecs_asg" {
     value               = "${var.name}-instances"
     propagate_at_launch = true # This tag will be applied to instances launched by this ASG
   }
+  
+  max_instance_lifetime = var.max_instance_lifetime
 }
 
 # Capacity provider for the ASG

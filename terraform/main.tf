@@ -88,6 +88,7 @@ module "asg" {
   ecs_cluster          = module.ecs_cluster.ecs_cluster
   instance_min_count   = var.instance_min_count
   instance_max_count   = var.instance_max_count
+  max_instance_lifetime = var.max_instance_lifetime
 }
 
 module "falco" {

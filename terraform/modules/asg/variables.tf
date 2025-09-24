@@ -40,3 +40,8 @@ variable "instance_min_count" {
   type        = number
   default     = 1
 }
+
+variable "max_instance_lifetime"{
+  description = "Auto terminate and replace instances when they reach this age"
+  type = number
+}
