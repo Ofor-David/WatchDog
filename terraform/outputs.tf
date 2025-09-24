@@ -13,7 +13,7 @@ output "falco_bucket_name"{
   value = module.falco.falco_bucket_name
 }
 
-output "bastion_shh_command" {
+output "bastion_ssh_command" {
   description = "command to ssh to bastion host"
   value       = "ssh -i ${var.key_name}.pem ubuntu@${module.bastion.bastion_public_dns}"
 }
