@@ -81,26 +81,32 @@ resource "aws_iam_policy" "falco_s3_read" {
   })
 }
 
-# IAM Role for EC2
-/* resource "aws_iam_role" "ecs_instance_role" {
-  name = "WatchDogECSInstanceRole"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
+resource "aws_iam_policy" "falco_ship_logs" {
+  name        = "FalcoShipLogs"
+  description = "Allow Falco to ship logs to "
+  policy = jsonencode({
+    Version = "2012-10-17"
     Statement = [
       {
         Effect = "Allow",
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        },
-        Action = "sts:AssumeRole"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ],
+        Resource = "*"
       }
     ]
   })
 }
- */
+
 # Attach policy to role
 resource "aws_iam_role_policy_attachment" "falco_s3_read_attach" {
   role       = aws_iam_role.ecs_instance_role.name
   policy_arn = aws_iam_policy.falco_s3_read.arn
+}
+resource "aws_iam_role_policy_attachment" "falco_ship_logs_attach" {
+  role       = aws_iam_role.ecs_instance_role.name
+  policy_arn = aws_iam_policy.falco_ship_logs.arn
 }
 

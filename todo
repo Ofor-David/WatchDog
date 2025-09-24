@@ -1,2 +1,2 @@
-# TODO: On new image push to ecr, ecr auto-pull&rerun container using new image
 # TODO: terraform state lock with s3 and dynamodb
+# TODO: Custom AMI for containers

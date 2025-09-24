@@ -39,6 +39,7 @@ module "ecs_cluster" {
   security_group_name     = module.security_group.alb_sg_name
   falco_bucket_name       = module.falco.falco_bucket_name
   custom_rules_object_key = "custom_rules.yaml"
+  falco_log_group_name    = module.falco.falco_log_group_name
 }
 
 module "iam" {
@@ -79,19 +80,20 @@ module "alb" {
 }
 
 module "asg" {
-  source               = "./modules/asg"
-  name                 = var.app_name
-  launch_template_id   = module.ecs_cluster.launch_template_id
-  ecs_cluster_name     = module.ecs_cluster.cluster_name
-  subnet_ids           = module.vpc.public_subnet_ids
-  lb_target_group_arns = [module.alb.target_group_arn]
-  ecs_cluster          = module.ecs_cluster.ecs_cluster
-  instance_min_count   = var.instance_min_count
-  instance_max_count   = var.instance_max_count
+  source                = "./modules/asg"
+  name                  = var.app_name
+  launch_template_id    = module.ecs_cluster.launch_template_id
+  ecs_cluster_name      = module.ecs_cluster.cluster_name
+  subnet_ids            = module.vpc.public_subnet_ids
+  lb_target_group_arns  = [module.alb.target_group_arn]
+  ecs_cluster           = module.ecs_cluster.ecs_cluster
+  instance_min_count    = var.instance_min_count
+  instance_max_count    = var.instance_max_count
   max_instance_lifetime = var.max_instance_lifetime
 }
 
 module "falco" {
-  source      = "./modules/falco"
-  name_prefix = var.app_name
+  source            = "./modules/falco"
+  name_prefix       = var.app_name
+  retention_in_days = var.falco_log_retention_duration
 }

@@ -113,3 +113,9 @@ variable "your_local_ip" {
   description = "Your local machine's public IP address for SSH access to the ALB security group"
   type        = string
 }
+
+variable "falco_log_retention_duration" {
+  description = "Number of days to retain logs in CloudWatch Log Group for Falco"
+  type        = number
+  default     = 30
+}

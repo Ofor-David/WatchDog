@@ -22,3 +22,9 @@ resource "aws_s3_bucket_public_access_block" "falco_rules" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
+
+resource "aws_cloudwatch_log_group" "falco" {
+  name              = "falco-alerts"
+  retention_in_days = var.retention_in_days
+}
+

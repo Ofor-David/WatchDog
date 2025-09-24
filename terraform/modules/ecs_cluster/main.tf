@@ -102,6 +102,27 @@ Type=oneshot
 ExecStart=/usr/local/bin/falco-update-rules.sh
 EOT
 
+FILE="/etc/falco/falco.yaml"
+
+# Use perl to do a multiline, case-sensitive replacement.
+# -0777 turns on "slurp" mode so we can match across newlines.
+# (?m) enables ^ and $ to match line boundaries; we accept optional CR (\r) for Windows endings.
+# The 'g' modifier makes it replace all occurrences in the file.
+perl -0777 -pe '
+  s{
+    (?m)                                   # multiline mode
+    ^file_output:\r?\n                     # line starting with file_output:
+    [ \t]*enabled:\s*false\r?\n            #   enabled: false
+    [ \t]*keep_alive:\s*false\r?\n         #   keep_alive: false
+    [ \t]*filename:\s*\./events\.txt\r?\n  #   filename: ./events.txt
+  }
+  {
+    "file_output:\n  enabled: true\n  keep_alive: false\n  filename: /var/log/falco.log\n"
+  }gex
+' -i.bak "$FILE"
+
+echo "Replacement done in '$FILE' (backup saved as '$FILE.bak')."
+
 # Cronjob for rule updates every night at 3 AM
 sudo mkdir -p /etc/cron.d
 cat <<EOT | sudo tee /etc/cron.d/falco-update
@@ -110,9 +131,34 @@ EOT
 sudo systemctl enable crond
 sudo systemctl start crond
 
+# --- CloudWatch Agent config (journald -> CloudWatch) ---
+mkdir -p /opt/aws/amazon-cloudwatch-agent/etc
+cat <<EOT > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
+{
+  "logs": {
+    "logs_collected": {
+      "files": {
+        "collect_list": [
+          {
+            "file_path": "/var/log/falco.log",
+            "log_group_name": "${var.falco_log_group_name}",
+            "log_stream_name": "{instance_id}-falco",
+            "timezone": "UTC"
+          }
+        ]
+      }
+    }
+  }
+}
+EOT
+
+# Enable and start CloudWatch Agent
+sudo systemctl enable amazon-cloudwatch-agent
+sudo systemctl restart amazon-cloudwatch-agent
+
 # Enable and start Falco (modern eBPF is default auto choice)
 sudo systemctl daemon-reload
-sudo systemctl start falco
+sudo systemctl restart falco
 EOF
   )
 

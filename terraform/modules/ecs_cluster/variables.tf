@@ -43,12 +43,16 @@ variable "volume_size" {
   type        = number
 }
 
-variable "falco_bucket_name"{
+variable "falco_bucket_name" {
   description = "s3 bucket name for falco custom rules"
-  type = string
+  type        = string
 }
 
-variable "custom_rules_object_key"{
+variable "custom_rules_object_key" {
   description = "s3 object key for falco custom rules"
+  type        = string
+}
+
+variable "falco_log_group_name" {
   type = string
 }
