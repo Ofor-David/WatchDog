@@ -47,8 +47,7 @@
 
 #### **Runtime Security Monitoring Gaps** 
 - **Problem**: Limited visibility into container behavior after deployment
-- **Solution**: AWS Container Insights integration with ECS for real-time monitoring and anomaly detection
-
+- **Solution**: Runtime Security and active threat detection with Falco
 #### **Manual Security Processes That Don't Scale**
 - **Problem**: Security teams overwhelmed by manual processes
 - **Solution**: Automated response mechanisms and policy-driven security controls
@@ -63,16 +62,21 @@
 - **Registry Security**: ECR integration with automatic image scanning on push
 - **Build-Breaking Security**: CI/CD pipeline fails on security violations
 
+### **Runtime Threat Detection with Falco**
+- **Custom Security Rules**: S3-based rule management with automated updates
+- **Real-time Alerting**: CloudWatch Logs integration for security event collection
+- **Host Monitoring**: Comprehensive coverage of ECS instances
+
 ### **Runtime Monitoring**
-- **Container Behavior Analysis**: Real-time monitoring of container activities
-- **Compliance Checking**: Continuous compliance validation against security standards
 - **Performance Monitoring**: Resource usage and performance metrics(in developement)
 
 ### **Infrastructure Security**
 - **Secure AWS Deployment**: Production-ready AWS architecture with security best practices
 - **Network Segmentation**: VPC with proper security groups and network isolation
 - **Identity & Access Management**: Least-privilege IAM roles and policies
-- **Encrypted Communication**: SSL encryption for all communications
+- **SSL/TLS Termination**: ALB with ACM certificate integration
+- **HTTPS Redirect**: Automatic HTTP to HTTPS redirection
+- **Domain-based Deployment**: Support for custom domain names
 
 ### **Observability & Monitoring(In developement)**
 - **Container Insights**: Deep visibility into ECS cluster and task performance
@@ -81,10 +85,12 @@
 - **Custom Metrics**: Security-focused metrics and dashboards
 
 ### **Automation & Scaling**
-- **Auto-scaling**: Automatic scaling based on CPU utilization and demand
+- **Dual-level Scaling**: Both ECS service tasks and EC2 instances auto-scale
 - **Self-healing**: Automatic replacement of unhealthy containers
 - **Infrastructure as Code**: Complete infrastructure automation with Terraform
 - **GitOps Integration**: Git-based deployment and configuration management
+- **CPU Target Tracking**: Configurable CPU utilization targets
+- **Instance Lifecycle Management**: Automatic instance replacement with configurable lifetime
 
 ---
 
@@ -117,6 +123,11 @@
 - Network isolation with public/private subnets
 - Security groups with least-privilege access
 
+#### **Bastion Host for Secure Access**
+- SSH access point in public subnet for administrative tasks
+- Secure gateway for accessing private resources
+- Integrated with security groups for controlled access
+
 ### Security Boundaries & Trust Zones
 
 1. **Internet Boundary**: ALB with public access, security groups filtering traffic
@@ -145,11 +156,14 @@
 - **Modular Architecture**: Reusable Terraform modules for scalability
 - **State Management**: Remote state storage (S3 + DynamoDB in development)
 
-### **CI/CD & Security**
+### **CI/CD, Security, and Logging**
 - **GitHub Actions**: Automated CI/CD pipelines
 - **Trivy**: Comprehensive vulnerability scanner
-- **Docker**: Containerization with multi-stage builds
+- **Falco**: Runtime security monitoring and threat detection
 - **Security Scanning**: Automated security checks in pipeline
+- **Docker**: Containerization with multi-stage and least privilege builds
+- **CloudWatch Logs**: Centralized logging for Falco security events
+- **S3**: Secure storage for Falco custom rules with versioning
 
 
 ## Prerequisites and Requirements
@@ -170,6 +184,8 @@
 - **MFA Enabled**: Multi-factor authentication on AWS account
 - **Secure Credential Storage**: Use AWS IAM roles or secure credential management
 - **Network Security**: Understand VPC and security group implications
+- **Domain & SSL Certificate**: Valid domain with ACM certificate for HTTPS
+- **Local IP Configuration**: Your public IP address for bastion host access
 
 ---
 
@@ -226,10 +242,19 @@ terraform output alb_dns_name
 # Test the application
 curl -v http://your-alb-dns-name/api
 ```
+### **Step 7: Deploy Falco Security Rules**
+```bash
+# Deploy Falco rules using the dedicated workflow
+git add falco/custom_rules.yaml
+git commit -m "Update Falco rules"
+git push origin main
 
-### **Step 7: Verify Security Features**
+# Or deploy manually to S3
+aws s3 cp falco/custom_rules.yaml s3://your-falco-bucket/custom_rules.yaml
+```
+### **Step 8: Verify Security Features**
 - Check ECR vulnerability scan results in AWS Console
-- Monitor Container Insights in CloudWatch
+- Monitor Falco logs in CloudWatch
 - Review security group configurations
 - Validate IAM role permissions
 
@@ -244,9 +269,11 @@ terraform/
 ├── variables.tf         # Root variables
 ├── outputs.tf           # Root outputs
 ├── provider.tf          # AWS provider configuration
-└── modules/
-    ├── vpc/             # Network infrastructure
-    ├── security_group/  # Security groups
+├── modules/
+    ├── bastion/        # Bastion host for secure access
+    ├── falco/          # Falco security monitoring setup
+    ├── vpc/            # Network infrastructure
+    ├── security_group/ # Security groups
     ├── iam/            # IAM roles and policies
     ├── ecr/            # Container registry
     ├── ecs_cluster/    # ECS cluster and launch template
@@ -265,6 +292,7 @@ AWS_ACCESS_KEY: Your AWS access key
 AWS_SECRET_KEY: Your AWS secret key  
 AWS_REGION: Your AWS region (e.g., us-east-1)
 ECR_REPOSITORY: Your ECR repository name (e.g., watchdog-repo)
+FALCO_BUCKT_NAME: Falco Bucket Name from terraform ouput
 ```
 
 #### **Workflow Explanation**
@@ -288,6 +316,12 @@ The Trivy scanner configuration:
     severity: 'CRITICAL,HIGH'   # Only fail on critical/high
     timeout: '5m'
 ```
+#### **Falco Rules Deployment Pipeline**
+The Falco workflow (`.github/workflows/falco_workflow.yml`) performs:
+
+1. **Rule Validation**: Ensures custom rules are properly formatted
+2. **S3 Deployment**: Uploads rules to dedicated S3 bucket
+3. **Automatic Updates**: EC2 instances pull updated rules via cron job
 
 ---
 ## API Documentation
@@ -299,10 +333,11 @@ Basic health check endpoint.
 
 **Request:**
 ```bash
-curl http://your-alb-dns/api
-```
-```bash
-curl https://domain-name/api
+# Health check with HTTPS
+curl https://yourdomain.com/api
+
+# Or using ALB DNS directly
+curl https://your-alb-dns-name/api
 ```
 
 **Response:**
@@ -318,6 +353,14 @@ curl https://domain-name/api
 
 ## Troubleshooting Guide
 
+#### **Useful Terraform Outputs**
+```bash
+# Get important deployment information
+terraform output alb_dns_name          # ALB DNS for testing
+terraform output ecr_repo_name          # ECR repository name
+terraform output falco_bucket_name      # S3 bucket for Falco rules
+terraform output bastion_ssh_command    # SSH command for bastion access
+```
 ### **Common Issues**
 
 #### **Terraform Deployment Failures**
@@ -385,6 +428,24 @@ aws ec2 describe-security-groups --group-names watchdog-sg watchdog-alb-sg
    - **Workaround**: Use t3.small or higher for production
    - **Solution**: Implement resource monitoring and right-sizing
 
+#### **HTTPS/SSL Certificate Issues**
+
+**Issue: "Certificate not found for domain"**
+```bash
+Error: No certificate found for domain yourdomain.com
+```
+**Solution:**
+- Ensure ACM certificate exists in the same region
+- Verify domain validation is complete
+- Check certificate status in AWS Console
+
+### **Falco Rules Deployment Issues**
+**Issue: "Access denied to S3 bucket"**
+
+**Solution:**
+- Verify IAM roles have S3 access permissions
+- -Check bucket name matches terraform output
+- Ensure GitHub Actions secrets are configured correctly
 ---
 
 ### **Contributing Guidelines**
@@ -401,6 +462,10 @@ aws ec2 describe-security-groups --group-names watchdog-sg watchdog-alb-sg
 3. **Dependency Management**: Regular security updates
 4. **Secret Management**: Never commit secrets to code
 5. **Least Privilege**: Minimal required permissions
+6. **Runtime Security Monitoring**: Falco rules for container behavior analysis
+7. **Infrastructure Security**: Bastion host for controlled administrative access
+8. **SSL/TLS Encryption**: End-to-end encrypted communications
+
 
 ## Roadmap and Future Plans
 
