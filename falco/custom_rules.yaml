@@ -7,9 +7,6 @@
 - macro: container
   condition: container.id != host
 
-- macro: shell_binaries
-  condition: proc.name in (bash, sh, zsh, ash)
-
 - macro: sensitive_files
   condition: fd.name in (/etc/passwd, /etc/shadow, /etc/sudoers, /etc/ssh/sshd_config)
 
@@ -21,7 +18,7 @@
 # 1. Detect unexpected shell in a container
 - rule: Unexpected shell in container
   desc: Alert if a shell is spawned inside a container
-  condition: evt.type = execve and container and shell_binaries
+  condition: evt.type = execve and container and proc.name in (bash, sh, zsh, ash, dash, csh, ksh, tcsh)
   output: "Falco Alert: Unexpected shell spawned inside container (container=%container.name proc=%proc.name user=%user.name)"
   priority: WARNING
 
