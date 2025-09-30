@@ -13,6 +13,9 @@
 - macro: trusted_network_ports
   condition: fd.sport in (22, 80, 443) or fd.rport in (22, 80, 443)
 
+- macro: trusted_aws_processes
+  condition: proc.name in (amazon-cloudwatch-agent, amazon-cloudwat, amazon-ssm-agent, aws)
+
 # --- Custom Rules ---
 
 # 1. Detect unexpected shell in a container
@@ -32,7 +35,7 @@
 # 3. Detect unexpected network connection
 - rule: Unexpected outbound connection
   desc: Detect processes connecting to non-standard ports
-  condition: evt.type = connect and fd.type = ipv4 and not trusted_network_ports
+  condition: evt.type = connect and fd.type = ipv4 and not trusted_network_ports and not trusted_aws_processes
   output: "Falco Alert: Unexpected outbound connection (proc=%proc.name user=%user.name dst=%fd.rip:%fd.rport)"
   priority: WARNING
 
