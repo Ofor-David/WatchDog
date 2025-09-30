@@ -22,21 +22,21 @@
 - rule: Unexpected shell in container
   desc: Alert if a shell is spawned inside a container
   condition: evt.type = execve and container and shell_binaries
-  output: "Falco Alert Unexpected shell spawned inside container (container=%container.name proc=%proc.name user=%user.name)"
+  output: "Falco Alert: Unexpected shell spawned inside container (container=%container.name proc=%proc.name user=%user.name)"
   priority: WARNING
 
 # 2. Detect write to sensitive system files
 - rule: Write to sensitive file
   desc: Detect any write to sensitive system files
-  condition: evt.type in (open, openat, creat) and evt.arg.flags contains O_WRONLY and sensitive_files
-  output: "Falco Alert Sensitive file write attempt (user=%user.name file=%fd.name proc=%proc.name)"
+  condition: evt.type in (open, openat, creat) and evt.is_open_write=true and sensitive_files
+  output: "Falco Alert: Sensitive file write attempt (user=%user.name file=%fd.name proc=%proc.name)"
   priority: CRITICAL
 
 # 3. Detect unexpected network connection
 - rule: Unexpected outbound connection
   desc: Detect processes connecting to non-standard ports
-  condition: evt.type = connect and fd.type = inet and not trusted_network_ports
-  output: "Falco Alert Unexpected outbound connection (proc=%proc.name user=%user.name dst=%fd.rip:%fd.rport)"
+  condition: evt.type = connect and fd.type = ipv4 and not trusted_network_ports
+  output: "Falco Alert: Unexpected outbound connection (proc=%proc.name user=%user.name dst=%fd.rip:%fd.rport)"
   priority: WARNING
 
 # 4. Detect execution of unexpected binaries on host
@@ -46,12 +46,12 @@
 - rule: Unexpected binary execution on host
   desc: Detect execution of non-trusted binaries on the ECS host
   condition: evt.type=execve and not container and not proc.exe in (trusted_binaries)
-  output: "Falco Alert Unexpected binary execution on host (proc=%proc.exe user=%user.name)"
+  output: "Falco Alert: Unexpected binary execution on host (proc=%proc.exe user=%user.name)"
   priority: WARNING
 
 # 5. Detect privilege escalation
 - rule: Privilege escalation via setuid
   desc: Detect attempts to escalate privileges with setuid
-  condition: evt.type = setuid and evt.arg.res = 0 and user.uid != 0
-  output: "Falco Alert Privilege escalation attempt (proc=%proc.name user=%user.name)"
+  condition: evt.type = setuid and evt.dir=> and evt.arg.uid=0 and user.uid != 0
+  output: "Falco Alert: Privilege escalation attempt (proc=%proc.name user=%user.name target_uid=%evt.arg.uid)"
   priority: CRITICAL
