@@ -12,7 +12,7 @@
     container.id != host and
     proc.name in (bash, sh, dash, zsh)
   output: >
-    Shell in container (container=%container.name image=%container.image.repository 
+    Falco Alert: Shell in container (container=%container.name image=%container.image.repository 
     user=%user.name cmd=%proc.cmdline)
   priority: WARNING
 
@@ -25,7 +25,7 @@
     fd.name in (/etc/shadow, /etc/sudoers) and
     evt.is_open_write=true and proc.name!=dockerd
   output: >
-    Credential file modified (file=%fd.name proc=%proc.name user=%user.name cmd=%proc.cmdline)
+    Falco Alert: Credential file modified (file=%fd.name proc=%proc.name user=%user.name cmd=%proc.cmdline)
   priority: CRITICAL
 
 # 3. Reverse shell indicators
@@ -39,5 +39,5 @@
      proc.cmdline contains "nc -e" or
      proc.cmdline contains "ncat -e")
   output: >
-    Reverse shell detected (cmd=%proc.cmdline user=%user.name container=%container.name)
+    Falco Alert: Reverse shell detected (cmd=%proc.cmdline user=%user.name container=%container.name)
   priority: CRITICAL
