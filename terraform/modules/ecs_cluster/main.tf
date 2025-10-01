@@ -123,15 +123,15 @@ perl -0777 -pe '
 
 echo "Replacement done in '$FILE' (backup saved as '$FILE.bak')."
 
-# Cronjob for rule updates every night at 3 AM
+# Cronjob for rule updates
 sudo mkdir -p /etc/cron.d
 cat <<EOT | sudo tee /etc/cron.d/falco-update
-0 3 * * * root /usr/local/bin/falco-update-rules.sh
+${var.cron_schedule} root /usr/local/bin/falco-update-rules.sh
 EOT
 sudo systemctl enable crond
 sudo systemctl start crond
 
-# --- CloudWatch Agent config (journald -> CloudWatch) ---
+# --- CloudWatch Agent config ---
 mkdir -p /opt/aws/amazon-cloudwatch-agent/etc
 cat <<EOT > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
 {
@@ -151,6 +151,8 @@ cat <<EOT > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
   }
 }
 EOT
+
+./usr/local/bin/falco-update-rules.sh
 
 # Enable and start CloudWatch Agent
 sudo systemctl enable amazon-cloudwatch-agent

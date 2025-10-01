@@ -119,3 +119,9 @@ variable "falco_log_retention_duration" {
   type        = number
   default     = 30
 }
+
+variable "cron_schedule" {
+  description = "Cron schedule for falco rule updates"
+  type        = string
+  default     = "0 3 * * *"  # Daily at 3 AM UTC
+}

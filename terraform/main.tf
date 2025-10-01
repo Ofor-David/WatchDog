@@ -40,6 +40,7 @@ module "ecs_cluster" {
   falco_bucket_name       = module.falco.falco_bucket_name
   custom_rules_object_key = "custom_rules.yaml"
   falco_log_group_name    = module.falco.falco_log_group_name
+  cron_schedule           = var.cron_schedule
 }
 
 module "iam" {

@@ -56,3 +56,8 @@ variable "custom_rules_object_key" {
 variable "falco_log_group_name" {
   type = string
 }
+
+variable "cron_schedule" {
+  description = "Cron schedule for falco rule updates"
+  type = string
+}

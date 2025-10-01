@@ -35,6 +35,7 @@
     evt.type = execve and
     (proc.cmdline contains "sh -i" or
      proc.cmdline contains "bash -i" or
+     proc.cmdline contains "sudo -i" or
      proc.cmdline contains "/dev/tcp/" or
      proc.cmdline contains "nc -e" or
      proc.cmdline contains "ncat -e")

@@ -18,4 +18,6 @@ instance_min_count = 1
 instance_max_count = 4
 instance_cpu_target = 40 # percentage of CPU utilization before scaling
 
-falco_log_retention_duration = 30
+falco_log_retention_duration = 30 # in days
+cron_schedule = "0 3 * * *" # How often to check for falco rule updates (default: daily at 3 AM UTC)
+
