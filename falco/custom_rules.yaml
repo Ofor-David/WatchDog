@@ -23,7 +23,7 @@
   condition: >
     evt.type in (open, openat) and
     fd.name in (/etc/shadow, /etc/sudoers) and
-    evt.is_open_write=true
+    evt.is_open_write=true and proc.name!=dockerd
   output: >
     Credential file modified (file=%fd.name proc=%proc.name user=%user.name cmd=%proc.cmdline)
   priority: CRITICAL
