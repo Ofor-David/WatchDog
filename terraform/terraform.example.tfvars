@@ -21,3 +21,10 @@ instance_cpu_target = 40 # percentage of CPU utilization before scaling
 falco_log_retention_duration = 30 # in days
 cron_schedule = "0 3 * * *" # How often to check for falco rule updates (default: daily at 3 AM UTC)
 
+# bastion
+your_local_ip = "value"
+
+# Slack notification configuration
+slack_webhook_url = "value"
+slack_channel_name = "value"
+slack_username = "value"

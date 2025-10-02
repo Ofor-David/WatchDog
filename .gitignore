@@ -3,3 +3,4 @@ terraform.tfvars
 *lock*
 *state*
 .terraform
+builds

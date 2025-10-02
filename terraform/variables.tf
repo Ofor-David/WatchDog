@@ -78,7 +78,7 @@ variable "service_cpu_target" {
 variable "instance_min_count" {
   description = "Minimum number of instances in the ASG"
   type        = number
-  default     = 0
+  default     = 1
 }
 
 variable "instance_max_count" {
@@ -90,7 +90,7 @@ variable "instance_max_count" {
 variable "instance_volume_size" {
   description = "EBS volume size for each instance in the ASG"
   type        = number
-  default     = 5
+  default     = 30
 }
 
 variable "max_instance_lifetime" {
@@ -124,4 +124,19 @@ variable "cron_schedule" {
   description = "Cron schedule for falco rule updates"
   type        = string
   default     = "0 3 * * *"  # Daily at 3 AM UTC
+}
+
+variable "slack_webhook_url"{
+  description = "Slack webhook URL for falco alerts"
+  type = string
+}
+
+variable "slack_channel_name"{
+description = "Slack channel name for falco alerts"
+type = string
+}
+
+variable "slack_username"{
+  description = "Slack username for falco alerts"
+  type = string
 }

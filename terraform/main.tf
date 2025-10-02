@@ -98,3 +98,14 @@ module "falco" {
   name_prefix       = var.app_name
   retention_in_days = var.falco_log_retention_duration
 }
+
+module "notify_slack" {
+  source  = "terraform-aws-modules/notify-slack/aws"
+  version = "~> 7.0"
+
+  sns_topic_name = module.falco.sns_topic_name
+
+  slack_webhook_url = var.slack_webhook_url
+  slack_channel     = var.slack_channel_name
+  slack_username    = var.slack_username
+}
