@@ -64,7 +64,7 @@
 
 ### **Runtime Threat Detection with Falco**
 - **Custom Security Rules**: S3-based rule management with automated updates
-- **Real-time Alerting**: CloudWatch Logs integration for security event collection
+- **Real-time Alerting**: CloudWatch Logs integration for security event collection to slack Channels via webhooks.
 - **Host Monitoring**: Comprehensive coverage of ECS instances
 
 ### **Runtime Monitoring**
@@ -88,7 +88,7 @@
 - **Dual-level Scaling**: Both ECS service tasks and EC2 instances auto-scale
 - **Self-healing**: Automatic replacement of unhealthy containers
 - **Infrastructure as Code**: Complete infrastructure automation with Terraform
-- **GitOps Integration**: Git-based deployment and configuration management
+- **Git Integration**: Git-based deployment and configuration management
 - **CPU Target Tracking**: Configurable CPU utilization targets
 - **Instance Lifecycle Management**: Automatic instance replacement with configurable lifetime
 
@@ -163,6 +163,7 @@
 - **Security Scanning**: Automated security checks in pipeline
 - **Docker**: Containerization with multi-stage and least privilege builds
 - **CloudWatch Logs**: Centralized logging for Falco security events
+- **Slack Integration**: Falco log alerts sent to slack channel
 - **S3**: Secure storage for Falco custom rules with versioning
 
 
@@ -174,6 +175,7 @@
 - **Terraform**: Version 1.0 or later  
 - **Python**: Version 3.12 or later
 - **Git**: For version control and CI/CD
+- **Slack**: Slack workspace, and webhook url. Check out this post by [fortum-tech](https://medium.com/fortum-tech/step-by-step-guide-to-create-a-slack-app-for-incoming-webhooks-3d9b799e8ae1) on how to create one.
 
 ### **Local Development Requirements**
 - **SSH Key Pair**: For EC2 instance access (create in AWS Console)
