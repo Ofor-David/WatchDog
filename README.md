@@ -68,7 +68,7 @@
 - **Host Monitoring**: Comprehensive coverage of ECS instances
 
 ### **Runtime Monitoring**
-- **Performance Monitoring**: Resource usage and performance metrics(in developement)
+- **Performance Monitoring**: Resource usage and performance metrics with grafana.
 
 ### **Infrastructure Security**
 - **Secure AWS Deployment**: Production-ready AWS architecture with security best practices
@@ -78,10 +78,11 @@
 - **HTTPS Redirect**: Automatic HTTP to HTTPS redirection
 - **Domain-based Deployment**: Support for custom domain names
 
-### **Observability & Monitoring(In developement)**
+### **Observability & Monitoring with AWS Managed Grafana**
+![plot](./grafana-dashboard.png)
 - **Container Insights**: Deep visibility into ECS cluster and task performance
 - **Health Monitoring**: Application and infrastructure health checks
-- **Centralized Logging**: Structured logging with centralized collection
+- **Centralized Logging**: Structured logging with centralized collection.
 - **Custom Metrics**: Security-focused metrics and dashboards
 
 ### **Automation & Scaling**
@@ -158,13 +159,16 @@
 
 ### **CI/CD, Security, and Logging**
 - **GitHub Actions**: Automated CI/CD pipelines
+- **Docker**: Containerization with multi-stage and least privilege builds
 - **Trivy**: Comprehensive vulnerability scanner
 - **Falco**: Runtime security monitoring and threat detection
 - **Security Scanning**: Automated security checks in pipeline
-- **Docker**: Containerization with multi-stage and least privilege builds
 - **CloudWatch Logs**: Centralized logging for Falco security events
-- **Slack Integration**: Falco log alerts sent to slack channel
 - **S3**: Secure storage for Falco custom rules with versioning
+
+### **Monitoring and Alerting**
+- **Slack Integration**: Falco log alerts sent to slack channel
+- **Grafana**: Visualize EC2/Task metrics and resource usages.
 
 
 ## Prerequisites and Requirements
@@ -188,6 +192,10 @@
 - **Network Security**: Understand VPC and security group implications
 - **Domain & SSL Certificate**: Valid domain with ACM certificate for HTTPS
 - **Local IP Configuration**: Your public IP address for bastion host access
+
+### **Grafana Visualisation(Optional)**
+- **Enabled IAM Identity Center**
+   - **User in the Identity Center wih access to resources**
 
 ---
 
@@ -262,6 +270,27 @@ aws s3 cp falco/custom_rules.yaml s3://your-falco-bucket/custom_rules.yaml
 
 ---
 
+### **Setup Grafana**
+- Enable IAM Identity Center (SSO)
+  - Go to IAM Identity Center in AWS Console → Enable.
+  - Note the User Portal URL (e.g, `https://my-sso.awsapps.com/start`).
+
+- Add Users / Groups
+  - In IAM Identity Center, create users or groups (e.g., GrafanaAdmins).
+  - Assign them to the Grafana workspace as ADMIN / EDITOR / VIEWER.
+
+- Add CloudWatch Data Source in Grafana(Requires ADMIN priviledges)
+  - Log into Grafana via the SSO User Portal.
+  - Go to Configuration → Data sources → Add data source.
+  - Select CloudWatch → set Default region (your ECS region).
+  - Save & Test → should return `Data source is working.`
+
+- Import Dashboards
+  - Go to Dashboards → Import.
+  - You can import from grafana.com
+  - Select CloudWatch data source.
+  - Save or customize if needed
+
 ## **Terraform Modules Structure**
 The infrastructure is organized into reusable modules:
 
@@ -273,6 +302,7 @@ terraform/
 ├── provider.tf          # AWS provider configuration
 ├── modules/
     ├── bastion/        # Bastion host for secure access
+    ├── grafana/        # Amazon Managed Grafana workspace 
     ├── falco/          # Falco security monitoring setup
     ├── vpc/            # Network infrastructure
     ├── security_group/ # Security groups
@@ -362,6 +392,7 @@ terraform output alb_dns_name          # ALB DNS for testing
 terraform output ecr_repo_name          # ECR repository name
 terraform output falco_bucket_name      # S3 bucket for Falco rules
 terraform output bastion_ssh_command    # SSH command for bastion access
+terraform output grafana_workspace_endpoint # Endpoint to view grafana dashboard
 ```
 ### **Common Issues**
 
@@ -470,41 +501,14 @@ Error: No certificate found for domain yourdomain.com
 
 
 ## Roadmap and Future Plans
-
-### **Current Limitations**
-1. **CI/CD Pipeline**
-   - No automatic deployment on ECR image push
-   - Manual ECS service updates required
-   - **Priority**: High - affects development velocity
-
-2. **Security Monitoring**
-   - Limited runtime security monitoring
-   - Basic vulnerability scanning only
-   - **Priority**: Medium - core feature expansion
-
-3. **Observability**
-   - Basic health checks only
-   - Limited custom metrics
-   - **Priority**: Medium - operational visibility
-
-#### **Planned Features**
-- **Runtime Behavior Analysis**: Container activity monitoring
-- **Automatic Deployment**: ECS service updates on image push
-- **Blue/Green Deployments**: Zero-downtime deployments
-- **Rollback Capabilities**: Automatic rollback on deployment failures
-
+- **Automated threat response**
+   
 ### **Technical Debt**
 
 #### **Infrastructure Improvements**
-- **State Management**: Terraform remote state with S3 + DynamoDB
-- **Module Versioning**: Semantic versioning for Terraform modules
-
-#### **Security Enhancements**
-- **TLS/SSL Configuration**: HTTPS with SSL certificates
-- **Secret Management**: AWS Secrets Manager integration
+- **State Management**: Terraform remote state with S3 + DynamoDB(In progress)
 
 ## Cost Considerations
-
 ### **AWS Resource Costs**
 
 #### **Estimated Cost Breakdown by Service**
@@ -524,6 +528,11 @@ Error: No certificate found for domain yourdomain.com
 **Network Costs:**
 - **ALB**: $0.0225/hour ($16.20/month) + $0.008/LCU
 - **Data Transfer**: $0.09/GB (after 1GB free)
+
+**Monitoring Costs:**
+- **Amazon Managed Grafana**: 90 days free trial(Max 5 Users)
+  - $9.00/Admin/month(After free tier)
+  - $5.00/Viewer/month(After free tier)
 
 #### **Cost Optimization Strategies**
 

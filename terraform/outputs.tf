@@ -20,5 +20,5 @@ output "bastion_ssh_command" {
 
 output "grafana_workspace_endpoint" {
   description = "The endpoint of the Grafana workspace"
-  value = var.use_grafana ? module.grafana.grafana_workspace_endpoint : "Enable grafana in variables.tf to create a workspace"
+  value = var.use_grafana ? "https://${module.grafana.grafana_workspace_endpoint}" : "Enable grafana in variables.tf to create a workspace"
 }
