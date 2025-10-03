@@ -28,3 +28,6 @@ your_local_ip = "value"
 slack_webhook_url = "value"
 slack_channel_name = "value"
 slack_username = "value"
+
+# Enable Grafana workspace creation
+use_grafana = false

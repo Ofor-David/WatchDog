@@ -109,3 +109,9 @@ module "notify_slack" {
   slack_channel     = var.slack_channel_name
   slack_username    = var.slack_username
 }
+
+module "grafana" {
+  count = var.use_grafana ? 1 : 0
+  source      = "./modules/grafana"
+  name_prefix = var.app_name
+}

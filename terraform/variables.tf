@@ -140,3 +140,9 @@ variable "slack_username"{
   description = "Slack username for falco alerts"
   type = string
 }
+
+variable "use_grafana" {
+  description = "Whether to create a Grafana workspace"
+  type        = bool
+  default     = false
+}

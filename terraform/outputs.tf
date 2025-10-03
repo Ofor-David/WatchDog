@@ -17,3 +17,8 @@ output "bastion_ssh_command" {
   description = "command to ssh to bastion host"
   value       = "\nscp -i ${var.key_name}.pem ${var.key_name}.pem ubuntu@${module.bastion.bastion_public_dns}:/home/ubuntu/\nssh -i ${var.key_name}.pem ubuntu@${module.bastion.bastion_public_dns}"
 }
+
+output "grafana_workspace_endpoint" {
+  description = "The endpoint of the Grafana workspace"
+  value = var.use_grafana ? module.grafana.grafana_workspace_endpoint : "Enable grafana in variables.tf to create a workspace"
+}
