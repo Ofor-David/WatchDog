@@ -37,7 +37,7 @@ resource "aws_launch_template" "ecs" {
   }
 
   network_interfaces {
-    associate_public_ip_address = true
+    associate_public_ip_address = false
     security_groups             = [var.security_group_id]
   }
 
