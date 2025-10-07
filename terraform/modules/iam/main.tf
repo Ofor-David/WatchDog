@@ -110,3 +110,44 @@ resource "aws_iam_role_policy_attachment" "falco_ship_logs_attach" {
   policy_arn = aws_iam_policy.falco_ship_logs.arn
 }
 
+resource "aws_iam_role" "falco_tagger_role" {
+  name = "falco-instance-reviewer"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = { Service = "lambda.amazonaws.com" },
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_policy" "falco_tagger_policy" {
+  name = "falcoTaggerPolicy"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = ["logs:DescribeLogStreams"],
+        Resource = "${var.falco_log_group_arn}"
+      },
+      {
+        Effect = "Allow",
+        Action = ["ec2:CreateTags", "ec2:DescribeInstances"],
+        Resource = "*"
+      },
+      {
+        Effect = "Allow",
+        Action = ["logs:CreateLogGroup","logs:CreateLogStream","logs:PutLogEvents","logs:DescribeLogStreams"],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "falco_tagger_attachment" {
+  role       = aws_iam_role.falco_tagger_role.name
+  policy_arn = aws_iam_policy.falco_tagger_policy.arn
+}
+

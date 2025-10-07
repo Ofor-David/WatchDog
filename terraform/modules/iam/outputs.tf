@@ -9,3 +9,7 @@ output "ecs_execution_role_arn" {
 output "ecs_task_role_arn"{
   value = aws_iam_role.ecs_task_role.arn
 }
+
+output "falco_tagger_role_arn"{
+  value = aws_iam_role.falco_tagger_role.arn
+}

@@ -16,3 +16,8 @@ output "sns_topic_name"{
   value = aws_sns_topic.falco_alerts.name
   description = "SNS topic name for falco alerts"
 }
+
+output "falco_log_group_arn"{
+  value = aws_cloudwatch_log_group.falco.arn
+  description = "ARN of the falco log group that collects logs"
+}
