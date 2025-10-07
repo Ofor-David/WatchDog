@@ -50,7 +50,7 @@
 - **Solution**: Runtime Security and active threat detection with Falco
 #### **Manual Security Processes That Don't Scale**
 - **Problem**: Security teams overwhelmed by manual processes
-- **Solution**: Automated response mechanisms and policy-driven security controls
+- **Solution**: Automated threat detection and response (Human in the loop system).
 
 ---
 
@@ -128,6 +128,8 @@
 - SSH access point in public subnet for administrative tasks
 - Secure gateway for accessing private resources
 - Integrated with security groups for controlled access
+#### **Lambda Function for Automated threat response**
+- Lambda function that tags instances with `ToBeInspected` on threat detection from that instance.
 
 ### Security Boundaries & Trust Zones
 
@@ -161,7 +163,7 @@
 - **GitHub Actions**: Automated CI/CD pipelines
 - **Docker**: Containerization with multi-stage and least privilege builds
 - **Trivy**: Comprehensive vulnerability scanner
-- **Falco**: Runtime security monitoring and threat detection
+- **Falco**: Runtime security monitoring with threat detection and response
 - **Security Scanning**: Automated security checks in pipeline
 - **CloudWatch Logs**: Centralized logging for Falco security events
 - **S3**: Secure storage for Falco custom rules with versioning
@@ -169,8 +171,7 @@
 ### **Monitoring and Alerting**
 - **Slack Integration**: Falco log alerts sent to slack channel
 - **Grafana**: Visualize EC2/Task metrics and resource usages.
-
-
+- **Lambda**: Tags instances that have emmited falco alerts.
 ## Prerequisites and Requirements
 
 ### **System Requirements**
@@ -246,11 +247,8 @@ terraform apply
 
 ### **Step 6: Access Application**
 ```bash
-# Get ALB DNS name from Terraform output
-terraform output alb_dns_name
-
 # Test the application
-curl -v http://your-alb-dns-name/api
+curl -kv https://your-alb-dns-name/api
 ```
 ### **Step 7: Deploy Falco Security Rules**
 ```bash
@@ -267,6 +265,10 @@ aws s3 cp falco/custom_rules.yaml s3://your-falco-bucket/custom_rules.yaml
 - Monitor Falco logs in CloudWatch
 - Review security group configurations
 - Validate IAM role permissions
+- Verify automated threat detection
+  - Set the `your-local-ip` variable in `terraform.tfvars`.
+  - SSH into an ecs host from the bastion and perform a prohibited event (e.g `sudo -i`).
+  - Wait a while, that instance should now be tagged as `ToBeInspected`.
 
 ---
 
@@ -304,6 +306,7 @@ terraform/
     ├── bastion/        # Bastion host for secure access
     ├── grafana/        # Amazon Managed Grafana workspace 
     ├── falco/          # Falco security monitoring setup
+    ├── lambda/         # Auto tag instance with "ToBeInspected"
     ├── vpc/            # Network infrastructure
     ├── security_group/ # Security groups
     ├── iam/            # IAM roles and policies
@@ -351,7 +354,7 @@ The Trivy scanner configuration:
 #### **Falco Rules Deployment Pipeline**
 The Falco workflow (`.github/workflows/falco_workflow.yml`) performs:
 
-1. **Rule Validation**: Ensures custom rules are properly formatted
+1. **Rule Validation**: Ensures custom rules are properly formatted(Not Implemented yet).
 2. **S3 Deployment**: Uploads rules to dedicated S3 bucket
 3. **Automatic Updates**: EC2 instances pull updated rules via cron job
 
@@ -369,7 +372,7 @@ Basic health check endpoint.
 curl https://yourdomain.com/api
 
 # Or using ALB DNS directly
-curl https://your-alb-dns-name/api
+curl -kv https://your-alb-dns-name/api
 ```
 
 **Response:**
@@ -388,7 +391,7 @@ curl https://your-alb-dns-name/api
 #### **Useful Terraform Outputs**
 ```bash
 # Get important deployment information
-terraform output alb_dns_name          # ALB DNS for testing
+terraform output curl_testing_app_url   # curl cmd for testing
 terraform output ecr_repo_name          # ECR repository name
 terraform output falco_bucket_name      # S3 bucket for Falco rules
 terraform output bastion_ssh_command    # SSH command for bastion access
