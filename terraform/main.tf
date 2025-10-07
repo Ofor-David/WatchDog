@@ -47,6 +47,7 @@ module "iam" {
   source           = "./modules/iam"
   name             = var.app_name
   falco_bucket_arn = module.falco.falco_bucket_arn
+  falco_log_group_arn = module.falco.falco_log_group_arn
 }
 
 module "ecs_service" {
@@ -97,6 +98,14 @@ module "falco" {
   source            = "./modules/falco"
   name_prefix       = var.app_name
   retention_in_days = var.falco_log_retention_duration
+}
+
+module "lambda" {
+  source      = "./modules/lambda"
+  name_prefix = var.app_name
+  tagger_role_arn = module.iam.falco_tagger_role_arn
+  falco_log_group_name = module.falco.falco_log_group_name
+  instance_scan_interval = var.instance_scan_interval
 }
 
 module "notify_slack" {

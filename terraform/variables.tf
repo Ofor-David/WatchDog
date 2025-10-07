@@ -146,3 +146,9 @@ variable "use_grafana" {
   type        = bool
   default     = false
 }
+
+variable "instance_scan_interval"{
+    description = "Interval in minutes for scanning instances"
+    type        = number
+    default     = 5
+}
